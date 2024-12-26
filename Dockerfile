@@ -4,8 +4,10 @@ FROM python:3.10-slim AS build
 # Set work directory
 WORKDIR /app
 
-# Copy and install dependencies
+# Copy only requirements.txt to install dependencies
 COPY requirements.txt .
+
+# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application files
@@ -23,8 +25,8 @@ WORKDIR /app
 # Copy installed dependencies from the build stage
 COPY --from=build /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
 
-# Copy application files
-COPY . .
+# Copy only necessary application files (if required)
+COPY --from=build /app /app
 
 # Run database migrations
 RUN python manage.py migrate
